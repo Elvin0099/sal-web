@@ -83,11 +83,39 @@
         padding: 10px;
       }
     }
+
+    #name-form {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 3;
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+
+    #name-form input {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+      width: 90%;
+    }
   </style>
 </head>
 <body>
 
-<div id="quiz-container">
+<div id="name-form">
+  <h2>Adınızı daxil edin:</h2>
+  <input type="text" id="user-name" placeholder="Məs: Aygün">
+  <button onclick="startQuiz()">Başla</button>
+</div>
+
+<div id="quiz-container" style="display:none;">
   <h2 id="question">Elvin necə biridir sizin fikrinizcə?</h2>
   <div id="answers">
     <button onclick="nextQuestion('Yaxşı')">Yaxşı</button>
@@ -97,6 +125,9 @@
 </div>
 
 <script>
+  let userName = "";
+  let currentQuestion = 0;
+
   const questions = [
     {
       text: "Elvin necə biridir sizin fikrinizcə?",
@@ -120,14 +151,23 @@
     },
   ];
 
-  let currentQuestion = 0;
+  function startQuiz() {
+    const nameInput = document.getElementById("user-name");
+    if (nameInput.value.trim() === "") {
+      alert("Zəhmət olmasa adınızı daxil edin.");
+      return;
+    }
+    userName = nameInput.value.trim();
+    document.getElementById("name-form").style.display = "none";
+    document.getElementById("quiz-container").style.display = "block";
+  }
 
   function nextQuestion(answer) {
     // Log cavab
     fetch('log.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ answer })
+      body: JSON.stringify({ name: userName, answer })
     });
 
     currentQuestion++;
@@ -142,7 +182,7 @@
       `;
     } else {
       container.innerHTML = `
-        <h2>Çox sağ ol! Elvin indi sənə Kinder sürpriz göndərəcək 😊</h2>
+        <h2>Çox sağ ol, ${userName}! Elvin indi sənə Kinder sürpriz göndərəcək 😊</h2>
       `;
     }
   }
