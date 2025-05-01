@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8">
+  <title>Elvinin Saytı</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      height: 100%;
+      font-family: 'Arial', sans-serif;
+      background-color: #fffef5;
+    }
+
+    .falling-egg {
+      position: absolute;
+      top: -100px;
+      width: 60px;
+      animation: fall linear infinite;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(110vh) rotate(360deg); opacity: 0.8; }
+    }
+
+    #quiz-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 255, 255, 0.95);
+      padding: 30px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      z-index: 2;
+      max-width: 400px;
+      animation: fadeIn 1s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translate(-50%, -60%); }
+      to { opacity: 1; transform: translate(-50%, -50%); }
+    }
+
+    h2 {
+      font-size: 22px;
+      color: #c0392b;
+    }
+
+    button {
+      margin: 10px;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 15px;
+      background-color: #f37021;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #e45a00;
+    }
+  </style>
+</head>
+<body>
+
+<div id="quiz-container">
+  <h2 id="question">Elvin necə biridir sizin fikrinizcə?</h2>
+  <div id="answers">
+    <button onclick="nextQuestion('Yaxşı')">Yaxşı</button>
+    <button onclick="nextQuestion('Pis')">Pis</button>
+    <button onclick="nextQuestion('Normal')">Normal</button>
+  </div>
+</div>
+
+<script>
+  const questions = [
+    {
+      text: "Elvin necə biridir sizin fikrinizcə?",
+      options: ["Yaxşı", "Pis", "Normal"]
+    },
+    {
+      text: "Elvin sizcece gözəldirmi?",
+      options: ["Hə", "Yox", "Normal"]
+    },
+    {
+      text: "Elvin sizce iticidir?",
+      options: ["HƏ", "Yox", "Bir az"]
+
+    },
+    {
+      text: "Elvin sənə kinder yumurta vermek üçün cağirsa gelersenmi?",
+      options: ["Bəlkə", "Dəqiq yox", "Bu maraqlı olardı :)"]
+    },
+    {
+      text: "Elvinlə tanış olmaq istərsənmi?",
+      options: ["Hə", "Yox", "Bilmirem, ola bilər"]
+    },
+  ];
+
+  let currentQuestion = 0;
+
+  function nextQuestion(answer) {
+    // Serverə log göndər
+    fetch('/log', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ answer })
+    });
+
+    // Növbəti suala keç
+    currentQuestion++;
+    const container = document.getElementById("quiz-container");
+    if (currentQuestion < questions.length) {
+      const q = questions[currentQuestion];
+      container.innerHTML = `
+        <h2>${q.text}</h2>
+        <div id="answers">
+          ${q.options.map(opt => `<button onclick="nextQuestion('${opt}')">${opt}</button>`).join("")}
+        </div>
+      `;
+    } else {
+      container.innerHTML = `
+        <h2>Çox sağ ol! Elvin indi sənə Kinder sürpriz göndərəcək 😊</h2>
+      `;
+    }
+  }
+
+  // Yumurtaları düşürmək funksiyası
+  function createEgg() {
+    const egg = document.createElement("img");
+    egg.src = "image.png";
+    egg.className = "falling-egg";
+    egg.style.left = Math.random() * window.innerWidth + "px";
+    egg.style.animationDuration = 4 + Math.random() * 3 + "s";
+    document.body.appendChild(egg);
+    setTimeout(() => egg.remove(), 10000);
+  }
+
+  setInterval(createEgg, 400);
+</script>
+
+</body>
+</html>
