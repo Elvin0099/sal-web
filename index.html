@@ -2,6 +2,7 @@
 <html lang="az">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Elvinin Saytı</title>
   <style>
     html, body {
@@ -16,7 +17,7 @@
     .falling-egg {
       position: absolute;
       top: -100px;
-      width: 60px;
+      width: 50px;
       animation: fall linear infinite;
       z-index: 1;
       pointer-events: none;
@@ -33,12 +34,13 @@
       left: 50%;
       transform: translate(-50%, -50%);
       background: rgba(255, 255, 255, 0.95);
-      padding: 30px;
+      padding: 20px;
       border-radius: 20px;
       text-align: center;
       box-shadow: 0 0 20px rgba(0,0,0,0.3);
       z-index: 2;
-      max-width: 400px;
+      max-width: 90%;
+      width: 400px;
       animation: fadeIn 1s ease;
     }
 
@@ -48,15 +50,17 @@
     }
 
     h2 {
-      font-size: 22px;
+      font-size: 20px;
       color: #c0392b;
     }
 
     button {
-      margin: 10px;
-      padding: 12px 24px;
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 12px;
       border: none;
-      border-radius: 15px;
+      border-radius: 12px;
       background-color: #f37021;
       color: white;
       font-size: 16px;
@@ -66,6 +70,18 @@
 
     button:hover {
       background-color: #e45a00;
+    }
+
+    @media (max-width: 480px) {
+      #quiz-container {
+        padding: 15px;
+        border-radius: 12px;
+      }
+
+      button {
+        font-size: 15px;
+        padding: 10px;
+      }
     }
   </style>
 </head>
@@ -87,35 +103,33 @@
       options: ["Yaxşı", "Pis", "Normal"]
     },
     {
-      text: "Elvin sizcece gözəldirmi?",
+      text: "Elvin sence gözəldirmi?",
       options: ["Hə", "Yox", "Normal"]
-    },
-    {
-      text: "Elvin sizce iticidir?",
-      options: ["HƏ", "Yox", "Bir az"]
-
-    },
-    {
-      text: "Elvin sənə kinder yumurta vermek üçün cağirsa gelersenmi?",
-      options: ["Bəlkə", "Dəqiq yox", "Bu maraqlı olardı :)"]
     },
     {
       text: "Elvinlə tanış olmaq istərsənmi?",
       options: ["Hə", "Yox", "Bilmirem, ola bilər"]
+    },
+    {
+      text: "Əgər Elvin səni bir Kinder yumurtası ilə çağırsaydı, gələrdinmi?",
+      options: ["Bəlkə", "Dəqiq yox", "Bu maraqlı olardı :)"]
+    },
+    {
+      text: "Səncə Elvinin sürprizi nədən ibarət ola bilər?",
+      options: ["Şokolad", "Şeir", "Gülməli nəsə"]
     },
   ];
 
   let currentQuestion = 0;
 
   function nextQuestion(answer) {
-    // Serverə log göndər
-    fetch('/log', {
+    // Log cavab
+    fetch('log.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ answer })
     });
 
-    // Növbəti suala keç
     currentQuestion++;
     const container = document.getElementById("quiz-container");
     if (currentQuestion < questions.length) {
@@ -133,7 +147,6 @@
     }
   }
 
-  // Yumurtaları düşürmək funksiyası
   function createEgg() {
     const egg = document.createElement("img");
     egg.src = "image.png";
